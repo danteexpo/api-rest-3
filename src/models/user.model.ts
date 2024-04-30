@@ -1,6 +1,6 @@
+import 'dotenv/config'
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
-import config from 'config'
 
 export interface UserInput {
   email: string
@@ -32,7 +32,7 @@ userSchema.pre('save', async function (next) {
     return next()
   }
 
-  const salt = await bcrypt.genSalt(config.get<number>('saltWorkFactor'))
+  const salt = await bcrypt.genSalt(Number(process.env.SALT_WORK_FACTOR))
   const hash = await bcrypt.hashSync(user.password, salt)
 
   user.password = hash
@@ -40,7 +40,7 @@ userSchema.pre('save', async function (next) {
   return next()
 })
 
-userSchema.methods.comparePasswords = async function (
+userSchema.methods.comparePassword = async function (
   candidatePassword: string
 ): Promise<boolean> {
   const user = this as UserDocument
@@ -48,6 +48,6 @@ userSchema.methods.comparePasswords = async function (
   return bcrypt.compare(candidatePassword, user.password).catch(() => false)
 }
 
-const UserModel = mongoose.model('User', userSchema)
+const UserModel = mongoose.model<UserDocument>('User', userSchema)
 
 export default UserModel

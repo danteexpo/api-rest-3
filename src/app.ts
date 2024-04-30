@@ -1,13 +1,16 @@
+import 'dotenv/config'
 import express from 'express'
-import config from 'config'
 import connect from './utils/connect'
 import router from './routes'
+import deserializeUser from './middleware/deserializeUser'
 
 const app = express()
 
-const port = config.get<number>('port')
+const port = process.env.PORT
 
 app.use(express.json())
+
+app.use(deserializeUser)
 
 app.use(router)
 
