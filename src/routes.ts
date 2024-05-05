@@ -9,6 +9,18 @@ import {
 } from './controllers/session.controller'
 import { createSessionSchema } from './schemas/session.schema'
 import requireUser from './middleware/requireUser'
+import {
+  createProductSchema,
+  deleteProductSchema,
+  getProductSchema,
+  updateProductSchema,
+} from './schemas/product.schema'
+import {
+  createProductHandler,
+  deleteProductHandler,
+  getProductHandler,
+  updateProductHandler,
+} from './controllers/product.controller'
 
 const router = Router()
 
@@ -27,5 +39,29 @@ router.post(
 router.get('/api/sessions', requireUser, getUserSessionsHandler)
 
 router.delete('/api/sessions', requireUser, deleteSessionHandler)
+
+router.post(
+  '/api/products',
+  [requireUser, validateResource(createProductSchema)],
+  createProductHandler
+)
+
+router.put(
+  '/api/products/:productId',
+  [requireUser, validateResource(updateProductSchema)],
+  updateProductHandler
+)
+
+router.get(
+  '/api/products/:productId',
+  validateResource(getProductSchema),
+  getProductHandler
+)
+
+router.delete(
+  '/api/products/:productId',
+  [requireUser, validateResource(deleteProductSchema)],
+  deleteProductHandler
+)
 
 export default router
